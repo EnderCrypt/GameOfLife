@@ -6,8 +6,20 @@ import com.endercrypt.gol.Chunk;
 import com.endercrypt.gol.ChunkBuffer;
 import com.endercrypt.gol.ChunkManager;
 
+/**
+ * @author EnderCrypt
+ *
+ */
 public abstract class GolBaseLookup implements GolLookup
 {
+	public static final GolLookup retriveLookup(Chunk chunk, ChunkManager chunkManager)
+	{
+		if (chunk.getFrontBuffer().haslife())
+			return new GolLivingLookup(chunk, chunkManager);
+		else
+			return new GolDeadLookup(chunk, chunkManager);
+	}
+
 	protected Chunk chunk;
 	protected ChunkBuffer chunkBuffer;
 
@@ -82,5 +94,28 @@ public abstract class GolBaseLookup implements GolLookup
 	private int livingValue(int x, int y)
 	{
 		return (get(x, y) ? 1 : 0);
+	}
+
+	/**
+	 * checks all 8 neighbouring checks for if they have any living neighbour
+	 */
+	@Override
+	public boolean hasLivingNeighbour()
+	{
+		for (int x = 0; x < 3; x++)
+		{
+			for (int y = 0; y < 3; y++)
+			{
+				if (((x == 1) && (y == 1)) == false) // dont check center
+				{
+					ChunkBuffer localChunkBuffer = neighbours[x][y];
+					if ((localChunkBuffer != null) && (localChunkBuffer.haslife()))
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

@@ -4,13 +4,16 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
-import com.endercrypt.gol.lookup.GolDeadLookup;
-import com.endercrypt.gol.lookup.GolLivingLookup;
+import com.endercrypt.gol.lookup.GolBaseLookup;
 import com.endercrypt.gol.lookup.GolLookup;
+import com.endercrypt.setting.Settings;
 
 public class Chunk
 {
 	public static final int SIZE = 10;
+
+	public static final Color backgroundColor = Settings.get().key("BackgroundColor").colorArgs(255);
+	public static final Color lifeColor = Settings.get().key("LifeColor").colorArgs(255);
 
 	private int x, y;
 
@@ -44,11 +47,7 @@ public class Chunk
 	public void update(ChunkManager chunkManager)
 	{
 		// prepare lookup
-		GolLookup lookup = null;
-		if (frontBuffer.haslife())
-			lookup = new GolLivingLookup(this, chunkManager);
-		else
-			lookup = new GolDeadLookup(this, chunkManager);
+		GolLookup lookup = GolBaseLookup.retriveLookup(this, chunkManager);
 		// update buffer
 		frontBuffer.writeBufferUpdate(backBuffer, lookup);
 	}
@@ -56,11 +55,6 @@ public class Chunk
 	public ChunkBuffer getFrontBuffer()
 	{
 		return frontBuffer;
-	}
-
-	public ChunkBuffer getBackBuffer()
-	{
-		return backBuffer;
 	}
 
 	public void flipBuffers()
@@ -94,14 +88,14 @@ public class Chunk
 					int xPixel = xPosition + (dx * size);
 					int yPixel = yPosition + (dy * size);
 					boolean alive = frontBuffer.get(dx, dy);
-					g2d.setColor(alive ? Color.WHITE : Color.BLACK);
+					g2d.setColor(alive ? lifeColor : backgroundColor);
 					g2d.fillRect(xPixel, yPixel, size, size);
 				}
 			}
 		}
 		else
 		{
-			g2d.setColor(Color.BLACK);
+			g2d.setColor(backgroundColor);
 			g2d.fillRect(xPosition, yPosition, Chunk.SIZE * size, Chunk.SIZE * size);
 		}
 	}

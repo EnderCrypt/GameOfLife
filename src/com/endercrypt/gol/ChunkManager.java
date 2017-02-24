@@ -4,6 +4,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
+import com.endercrypt.gol.garbage.WasteCollector;
+
 public class ChunkManager implements Iterable<ChunkArea>
 {
 	private Deque<ChunkArea> chunkAreas = new ArrayDeque<>();
@@ -66,18 +68,9 @@ public class ChunkManager implements Iterable<ChunkArea>
 	 */
 	public synchronized int garbageCollect()
 	{
-		long time = System.currentTimeMillis();
-
-		Iterator<ChunkArea> iterator = chunkAreas.iterator();
-		while (iterator.hasNext())
-		{
-			ChunkArea area = iterator.next();
-			boolean insignificant = area.garbageCollect();
-			if (insignificant)
-				iterator.remove();
-		}
-
-		return (int) (System.currentTimeMillis() - time);
+		WasteCollector garbageDeleter = new WasteCollector(this);
+		garbageDeleter.process();
+		return garbageDeleter.getTime();
 	}
 
 	@Override
