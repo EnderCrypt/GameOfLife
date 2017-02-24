@@ -4,8 +4,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Random;
+
+import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import com.endercrypt.gol.Chunk;
 import com.endercrypt.gol.ChunkArea;
@@ -22,14 +30,15 @@ import com.endercrypt.util.Average;
 
 public class Main
 {
+	private static final String SCREENSHOT_DIRECTORY = "screenshots/";
 	private static final int THREADS = Settings.get().key("Threads").getInteger();
-
 	private static final int TILE_SIZE = Settings.get().key("CellSize").getInteger();
 
 	private static GolProcessor golProcessor;
 	private static ChunkManager chunkManager;
 	private static AwtWindow window;
 	private static Random random;
+	private static Long seed;
 
 	private static boolean playing = false;
 	private static boolean step = true;
@@ -41,7 +50,8 @@ public class Main
 	public static void main(String[] args) throws InterruptedException
 	{
 		// random
-		random = new Random(Settings.get().key("Seed").getLong());
+		seed = Settings.get().key("Seed").getLong();
+		random = new Random(seed);
 
 		// processor
 		golProcessor = new GolProcessor(THREADS);
@@ -105,9 +115,10 @@ public class Main
 
 		// play controls
 		keyboard.bindKey(KeyEvent.VK_SPACE, BindType.PRESS, (keyCode, bindType) -> playing = !playing);
-		keyboard.bindKey(KeyEvent.VK_S, BindType.PRESS, (keyCode, bindType) -> step = true);
+		keyboard.bindKey(KeyEvent.VK_PERIOD, BindType.PRESS, (keyCode, bindType) -> step = true);
 
 		// misc
+		keyboard.bindKey(KeyEvent.VK_S, BindType.PRESS, (keyCode, bindType) -> screenshot());
 		keyboard.bindKey(KeyEvent.VK_C, BindType.PRESS, new AppKeyListener()
 		{
 			@Override
@@ -130,7 +141,6 @@ public class Main
 	private static void updateSequence() throws InterruptedException
 	{
 		// update game
-
 		Average average = new Average(100);
 		while (true)
 		{
@@ -210,6 +220,47 @@ public class Main
 				int ry = random.nextInt(Chunk.SIZE);
 				mainBuffer.set(rx, ry, true);
 			}
+		}
+	}
+
+	private synchronized static void screenshot()
+	{
+		// make sure directory exists
+		new File(SCREENSHOT_DIRECTORY).mkdir();
+
+		// get filename
+		File screenshotFile = new File(SCREENSHOT_DIRECTORY + "seed_" + seed + "_Frame_" + frame + ".png");
+
+		// create screenshot
+		Dimension screenSize = window.screenSize();
+		int width = screenSize.width / TILE_SIZE;
+		int height = screenSize.height / TILE_SIZE;
+
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2d = image.createGraphics();
+		int xAreas = (screenSize.width / Chunk.SIZE) + 1;
+		int yAreas = (screenSize.height / Chunk.SIZE) + 1;
+		for (int x = 0; x < xAreas; x++)
+		{
+			for (int y = 0; y < yAreas; y++)
+			{
+				Chunk chunk = chunkManager.unsafeGetChunk(x + xView, y + yView);
+				if (chunk != null)
+					chunk.draw(g2d, x * Chunk.SIZE, y * Chunk.SIZE, 1);
+			}
+		}
+
+		// write file
+		try
+		{
+			ImageIO.write(image, "PNG", screenshotFile);
+		}
+		catch (IOException e)
+		{
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			JOptionPane.showMessageDialog(null, sw.toString(), "Failed to save screenshot", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
