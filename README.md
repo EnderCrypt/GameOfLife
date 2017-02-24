@@ -2,5 +2,6 @@
 
 Game Of Life with an infinite map
 
-space to resume/pause
-S to step
+Space to resume/pause<br>
+S to step<br>
+C to center<br>
