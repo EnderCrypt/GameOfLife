@@ -10,7 +10,7 @@ import com.endercrypt.gol.lookup.GolLookup;
 
 public class Chunk
 {
-	public static final int SIZE = 20;
+	public static final int SIZE = 10;
 
 	private int x, y;
 
