@@ -29,8 +29,8 @@ public class Main
 	private static boolean playing = false;
 	private static boolean step = true;
 
-	private static int xView = -2;
-	private static int yView = -2;
+	private static int xView = -5;
+	private static int yView = -5;
 
 	public static void main(String[] args) throws InterruptedException
 	{
@@ -42,7 +42,7 @@ public class Main
 		chunkManager = new ChunkManager();
 
 		// screen
-		int screenSize = TILE_SIZE * Chunk.SIZE * 5;
+		int screenSize = TILE_SIZE * Chunk.SIZE * 11;
 		window = new AwtWindow("Infinite Game Of Life", new Dimension(screenSize, screenSize), Main::draw);
 		window.show();
 
