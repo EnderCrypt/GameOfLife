@@ -1,0 +1,16 @@
+// program created by EnderCrypt
+
+Threads = 16
+Seed = 1234
+mirrorMode = True
+
+CellSize = 5
+
+Grid = True
+GridColor = 0, 0, 255
+
+CenterSquare = False
+CenterSquareColor = 255, 0, 0
+
+BackgroundColor = 0, 0, 0
+LifeColor = 255, 255, 255
