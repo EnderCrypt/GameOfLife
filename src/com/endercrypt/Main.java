@@ -152,7 +152,7 @@ public class Main
 			}
 
 			// garbage collect
-			if (frame % 1 == 0)
+			if (frame % 250 == 0)
 			{
 				int gcDelta = chunkManager.garbageCollect();
 				System.out.println("GC: finished (took " + gcDelta + " ms)");
