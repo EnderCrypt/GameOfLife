@@ -11,6 +11,8 @@ import com.endercrypt.gol.ChunkManager;
 import com.endercrypt.gol.processor.GolProcessor;
 import com.endercrypt.gol.processor.ProcessingTicket;
 import com.endercrypt.gui.AwtWindow;
+import com.endercrypt.gui.keyboard.AppKeyListener;
+import com.endercrypt.gui.keyboard.Keyboard;
 import com.endercrypt.gui.keyboard.Keyboard.BindType;
 import com.endercrypt.util.Average;
 
@@ -44,14 +46,56 @@ public class Main
 		window = new AwtWindow("Infinite Game Of Life", new Dimension(screenSize, screenSize), Main::draw);
 		window.show();
 
-		window.getKeyboard().bindKey(KeyEvent.VK_LEFT, BindType.PRESS, (keyCode, bindType) -> xView--);
-		window.getKeyboard().bindKey(KeyEvent.VK_RIGHT, BindType.PRESS, (keyCode, bindType) -> xView++);
-		window.getKeyboard().bindKey(KeyEvent.VK_UP, BindType.PRESS, (keyCode, bindType) -> yView--);
-		window.getKeyboard().bindKey(KeyEvent.VK_DOWN, BindType.PRESS, (keyCode, bindType) -> yView++);
+		setupKeyboard();
 
-		window.getKeyboard().bindKey(KeyEvent.VK_SPACE, BindType.PRESS, (keyCode, bindType) -> playing = !playing);
-		window.getKeyboard().bindKey(KeyEvent.VK_S, BindType.PRESS, (keyCode, bindType) -> step = true);
+		updateSequence();
+	}
 
+	private static void setupKeyboard()
+	{
+		Keyboard keyboard = window.getKeyboard();
+		keyboard.bindKey(KeyEvent.VK_LEFT, BindType.PRESS, new AppKeyListener()
+		{
+			@Override
+			public void keyTriggered(int keycode, BindType bindType)
+			{
+				xView--;
+				window.repaint();
+			}
+		});
+		keyboard.bindKey(KeyEvent.VK_RIGHT, BindType.PRESS, new AppKeyListener()
+		{
+			@Override
+			public void keyTriggered(int keycode, BindType bindType)
+			{
+				xView++;
+				window.repaint();
+			}
+		});
+		keyboard.bindKey(KeyEvent.VK_UP, BindType.PRESS, new AppKeyListener()
+		{
+			@Override
+			public void keyTriggered(int keycode, BindType bindType)
+			{
+				yView--;
+				window.repaint();
+			}
+		});
+		keyboard.bindKey(KeyEvent.VK_DOWN, BindType.PRESS, new AppKeyListener()
+		{
+			@Override
+			public void keyTriggered(int keycode, BindType bindType)
+			{
+				yView++;
+				window.repaint();
+			}
+		});
+		keyboard.bindKey(KeyEvent.VK_SPACE, BindType.PRESS, (keyCode, bindType) -> playing = !playing);
+		keyboard.bindKey(KeyEvent.VK_S, BindType.PRESS, (keyCode, bindType) -> step = true);
+	}
+
+	private static void updateSequence() throws InterruptedException
+	{
 		// update game
 		Average average = new Average(100);
 		int updates = 0;
@@ -130,6 +174,7 @@ public class Main
 		int xAreas = (screenSize.width / pixelSize) + 1;
 		int yAreas = (screenSize.height / pixelSize) + 1;
 
+		// draw all chunks
 		for (int x = 0; x < xAreas; x++)
 		{
 			for (int y = 0; y < yAreas; y++)
@@ -139,5 +184,9 @@ public class Main
 				g2d.drawRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
 			}
 		}
+
+		// mark center
+		g2d.setColor(Color.RED);
+		g2d.drawRect(-xView * pixelSize, -yView * pixelSize, pixelSize, pixelSize);
 	}
 }
