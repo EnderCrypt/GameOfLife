@@ -10,7 +10,7 @@ import com.endercrypt.setting.Settings;
 
 public class Chunk
 {
-	public static final int SIZE = 10;
+	public static final int SIZE = 11;
 
 	public static final Color backgroundColor = Settings.get().key("BackgroundColor").colorArgs(255);
 	public static final Color lifeColor = Settings.get().key("LifeColor").colorArgs(255);
