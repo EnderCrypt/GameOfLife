@@ -72,11 +72,9 @@ public class ChunkManager implements Iterable<ChunkArea>
 		while (iterator.hasNext())
 		{
 			ChunkArea area = iterator.next();
-			boolean isEmpty = area.garbageCollect();
-			if (isEmpty)
-			{
+			boolean insignificant = area.garbageCollect();
+			if (insignificant)
 				iterator.remove();
-			}
 		}
 
 		return (int) (System.currentTimeMillis() - time);

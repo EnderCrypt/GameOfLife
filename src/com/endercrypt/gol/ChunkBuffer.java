@@ -63,6 +63,25 @@ public class ChunkBuffer
 		buffer = new boolean[Chunk.SIZE][Chunk.SIZE];
 	}
 
+	public int countLiving(int limit)
+	{
+		if (limit <= 0)
+			return 0;
+
+		int living = 0;
+		for (int x = 0; x < Chunk.SIZE; x++)
+		{
+			for (int y = 0; y < Chunk.SIZE; y++)
+			{
+				if (buffer[x][y])
+					living++;
+				if (living >= limit)
+					return living;
+			}
+		}
+		return living;
+	}
+
 	@Override
 	public String toString()
 	{

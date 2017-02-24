@@ -70,6 +70,19 @@ public class Chunk
 		frontBuffer = newFrontBuffer;
 	}
 
+	public boolean isNearEdge()
+	{
+		int xMod = Math.floorMod(x, Chunk.SIZE);
+		if ((xMod == 0) || (xMod == 9))
+			return true;
+
+		int yMod = Math.floorMod(y, Chunk.SIZE);
+		if ((yMod == 0) || (yMod == 9))
+			return true;
+
+		return false;
+	}
+
 	public void draw(Graphics2D g2d, int xPosition, int yPosition, int size)
 	{
 		if (frontBuffer.haslife())

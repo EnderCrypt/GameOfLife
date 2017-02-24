@@ -156,21 +156,55 @@ public class ChunkArea implements Iterable<Chunk>
 	/**
 	 * built in garbage collector for cleaning up the area of empty chunks (dead ones)
 	 * TODO: for future, only clean up areas with no living neighbour (this would improve performance on the update after the garbage collection)
+	 * 
+	 * returns true if the whole area should be removed
 	 */
 	public boolean garbageCollect()
 	{
-		boolean isEmpty = true;
-		Iterator<Chunk> iterator = iterator();
-		while (iterator.hasNext())
+		final int GC_DISTANCE = 1; // if an area is this far away, it may be garbage collected assuming it also
+		final int GC_TILES = 10; // has LESS living tiles than this
+
+		boolean distant = Math.max(Math.abs(xPosition), Math.abs(yPosition)) > GC_DISTANCE;
+		if (distant)
 		{
-			Chunk chunk = iterator.next();
-			if (chunk.getFrontBuffer().haslife() == false)
+			int living = 0;
+			for (Chunk chunk : this)
 			{
-				iterator.remove();
-				continue;
+				boolean isNearEdge = chunk.isNearEdge();
+				int localLiving = chunk.getFrontBuffer().countLiving(GC_TILES - living);
+
+				if (localLiving > 0)
+				{
+					if (isNearEdge)
+					{
+						return false;
+					}
+					living += localLiving;
+				}
 			}
-			isEmpty = false;
+
+			if (living < GC_TILES)
+			{
+				System.out.println("GC: destroying distant area with " + living + " living tiles");
+				return true;
+			}
+			return false;
 		}
-		return isEmpty;
+		else
+		{
+			boolean insignificant = true;
+			Iterator<Chunk> iterator = iterator();
+			while (iterator.hasNext())
+			{
+				Chunk chunk = iterator.next();
+				if (chunk.getFrontBuffer().haslife() == false)
+				{
+					iterator.remove();
+					continue;
+				}
+				insignificant = false;
+			}
+			return insignificant;
+		}
 	}
 }

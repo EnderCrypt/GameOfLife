@@ -54,6 +54,8 @@ public class Main
 	private static void setupKeyboard()
 	{
 		Keyboard keyboard = window.getKeyboard();
+
+		// camera movement
 		keyboard.bindKey(KeyEvent.VK_LEFT, BindType.PRESS, new AppKeyListener()
 		{
 			@Override
@@ -90,8 +92,24 @@ public class Main
 				window.repaint();
 			}
 		});
+
+		// play controls
 		keyboard.bindKey(KeyEvent.VK_SPACE, BindType.PRESS, (keyCode, bindType) -> playing = !playing);
 		keyboard.bindKey(KeyEvent.VK_S, BindType.PRESS, (keyCode, bindType) -> step = true);
+
+		// misc
+		keyboard.bindKey(KeyEvent.VK_C, BindType.PRESS, new AppKeyListener()
+		{
+			@Override
+			public void keyTriggered(int keycode, BindType bindType)
+			{
+				final int CHUNK_SIZE = TILE_SIZE * Chunk.SIZE;
+				Dimension screenSize = window.screenSize();
+				xView = -(screenSize.width / 2) / CHUNK_SIZE;
+				yView = -(screenSize.height / 2) / CHUNK_SIZE;
+				window.repaint();
+			}
+		});
 	}
 
 	private static void updateSequence() throws InterruptedException
@@ -121,7 +139,7 @@ public class Main
 			if (updates % 200 == 0)
 			{
 				int gcDelta = chunkManager.garbageCollect();
-				System.out.println("Garbage collected (took " + gcDelta + " ms)");
+				System.out.println("GC: collected (took " + gcDelta + " ms)");
 			}
 
 			// draw
