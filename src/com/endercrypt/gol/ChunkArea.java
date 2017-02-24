@@ -161,7 +161,7 @@ public class ChunkArea implements Iterable<Chunk>
 	 */
 	public boolean garbageCollect()
 	{
-		final int GC_DISTANCE = 1; // if an area is this far away, it may be garbage collected assuming it also
+		final int GC_DISTANCE = 10; // if an area is this far away, it may be garbage collected assuming it also
 		final int GC_TILES = 10; // has LESS living tiles than this
 
 		boolean distant = Math.max(Math.abs(xPosition), Math.abs(yPosition)) > GC_DISTANCE;

@@ -136,7 +136,7 @@ public class Main
 				System.out.println("Update Time: " + average.get() + " ms");
 			}
 
-			if (updates % 200 == 0)
+			if (updates % 500 == 0)
 			{
 				int gcDelta = chunkManager.garbageCollect();
 				System.out.println("GC: collected (took " + gcDelta + " ms)");
