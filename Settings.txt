@@ -2,11 +2,11 @@
 
 Threads = 16
 Seed = 1234
-mirrorMode = True
+mirrorMode = False
 
 CellSize = 5
 
-Grid = True
+Grid = False
 GridColor = 0, 0, 255
 
 CenterSquare = False
