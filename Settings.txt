@@ -1,8 +1,8 @@
 // program created by EnderCrypt
 
 Threads = 8
-Seed = 1234
-mirrorMode = True
+Seed = 1337
+mirrorMode = False
 
 CellSize = 5
 
