@@ -81,6 +81,10 @@ public class WasteCollector
 			}
 			insignificant = false;
 		}
+		if (insignificant)
+		{
+			System.out.println("GC: destroying nearby area (no life)");
+		}
 		return insignificant;
 	}
 
